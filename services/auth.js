@@ -8,12 +8,14 @@ const store = require('./store');
 
 /**
  * login
- * @param {string} userName
- * @param {string} password  
- * @param {boolean} rememberMeChecked 
+ * @param {Object} model
+ * @param {string} model.userName
+ * @param {string} model.password
+ * @param {boolean} model.rememberMeChecked
  */
-const login = async (userName, password, rememberMeChecked = null) => {
-  const data = await api.login({ userName, password, rememberMeChecked });
+const login = async (model) => {
+  model.rememberMeChecked = model.rememberMeChecked || false;
+  const data = await api.login(model);
   store.auth_token = data.auth_token;
 }
 
