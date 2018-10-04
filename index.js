@@ -1,12 +1,10 @@
 // const faker = require('faker');
 const auth = require('./services/auth');
+const config = require('./services/config');
 // const api = require('./services/api');
 
 const flow = async () => {
-  await auth.login({
-    userName: 'investor@ddlinvestor.com',
-    password: '!Qddlinvestor12345'
-  });
+  await auth.login(config.creds.invester);
 };
 
 flow();
