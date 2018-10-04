@@ -1,6 +1,6 @@
 module.exports = {
   creds: {
-    invester: {
+    investor: {
       userName: 'investor@ddlinvestor.com',
       password: '!Qddlinvestor12345'
     },

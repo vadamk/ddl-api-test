@@ -1,10 +1,10 @@
 // const faker = require('faker');
 const auth = require('./services/auth');
-const config = require('./services/config');
+const config = require('./config');
 // const api = require('./services/api');
 
 const flow = async () => {
-  await auth.login(config.creds.invester);
+  await auth.login(config.creds.investor);
 };
 
 flow();
