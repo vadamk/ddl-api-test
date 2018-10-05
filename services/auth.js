@@ -19,6 +19,9 @@ const login = async (model) => {
   store.auth_token = data.auth_token;
 }
 
+const getAuthToken = `Bearer ${store.auth_token}`
+
 module.exports = {
-  login
+  login,
+  getAuthToken
 }
