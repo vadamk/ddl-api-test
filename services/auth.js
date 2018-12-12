@@ -16,7 +16,7 @@ const store = require('./store');
 const login = async (model) => {
   model.rememberMeChecked = model.rememberMeChecked || false;
   const data = await api.login(model);
-  store.auth_token = data.auth_token;
+  store.setAuthToken(data.auth_token);
 }
 
 const getAuthToken = `Bearer ${store.auth_token}`

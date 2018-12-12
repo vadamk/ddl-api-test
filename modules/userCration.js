@@ -2,7 +2,7 @@ const api = require('../services/api');
 const auth = require('../services/auth');
 const config = require('../config');
 const fakeData = require('../services/fakeData');
-const Spinner = require('cli-spinner').Spinner;
+const spinner = require('../services/spinner');
 
 const registration = async () => {
   const reqData = fakeData.registration();
@@ -10,11 +10,11 @@ const registration = async () => {
   return reqData;
 }
 
-const getRegistrationRequestsId = async (filterString, expectedEmail) => {
+const getRegistrationRequestsId = async (expectedEmail) => {
   const data = await api.registrationRequestsList({
     pageNumber: 1,
     pageSize: 1,
-    filterString,
+    filterString: '',
     orderString: ''
   });
 
@@ -28,7 +28,7 @@ const getRegistrationRequestsId = async (filterString, expectedEmail) => {
 
 const acceptRegRequest = async id => {
   await api.registrationRequestChangeStatus({
-    id,
+    id: id,
     isApproved: true,
     declineReason: ''
   });
@@ -53,30 +53,38 @@ const accountCreate = async (regReqData, regRequestId) => {
 
 const flow = async () => {
 
-  var spinner = new Spinner('processing.. %s')
+  console.log(' \n registration: \n');
 
-  console.log('start');
-
-  console.log('\n registration:\n');
   spinner.start();
   const regReqData = await registration();
   spinner.stop();
 
-  console.log('\n regReqData: ', regReqData, '\n');
+  console.log(' \n regReqData: ', regReqData, ' \n');
 
-  console.log('\n Login:\n');
+  console.log(' \n Login: \n');
+  spinner.start();
   await auth.login(config.creds.superadmin);
+  spinner.stop();
 
-  console.log('\n Get registration requests ID:\n');
-  const regRequestId = await getRegistrationRequestsId('', regReqData.email);
+  console.log(' \n Get ID of registration requests: \n');
 
-  console.log('\n regRequestId: ', regRequestId, '\n');
+  spinner.start();
+  const regRequestId = await getRegistrationRequestsId(regReqData.email);
+  spinner.stop();
 
-  console.log('\n Accept reg request:\n');
+  console.log(' \n regRequestId: ', regRequestId, ' \n');
+
+  console.log(' \n Accept reg request: \n');
+
+  spinner.start();
   await acceptRegRequest(regRequestId);
+  spinner.stop();
 
-  console.log('\n Create account:\n');
+  console.log(' \n Create account: \n');
+
+  spinner.start();
   await accountCreate(regReqData, regRequestId);
+  spinner.stop();
 
 }
 

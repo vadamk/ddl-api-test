@@ -10,6 +10,6 @@ module.exports = {
     }
   },
   investorCompanyId: '33af9971-6b36-4581-b513-a95401165571',
-  // userEmail: 'Loter1931@rhyta.com',
+  // userEmail: 'test-vrmyr@mail-tester.com',
   host: 'http://dev-api.diligend.com',
 }

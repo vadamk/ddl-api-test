@@ -1,12 +1,22 @@
 const axios = require('axios');
 const store = require('./store');
 const config = require('../config');
+const errorHandle = require('./error');
 
-const DEFAULT_HEADERS = {
-  'Content-Type': 'application/json',
-  'Authorization': `Bearer ${store.auth_token}`,
-  'Origin': 'http://localhost'
-}
+const getDefaultHeaders = () => {
+  const headers = {
+    'Content-Type': 'application/json',
+    'Origin': 'http://localhost'
+  };
+
+  const token = store.getAuthToken();
+  
+  if (token) {
+    headers.authorization = `Bearer ${token}`
+  }
+
+  return headers;
+};
 
 /**
  * Login request
@@ -17,11 +27,13 @@ const DEFAULT_HEADERS = {
  */
 const login = async model => {
   try {
-    const response = await axios.post(`${config.host}/api/auth/login`, model);
+    const response = await axios.post(
+      `${config.host}/api/auth/login`,
+      model
+    );
     return response.data;
   } catch (error) {
-    console.error('ERROR: ', error.request);
-    console.error('ERROR: ', error.response);
+    errorHandle(error);
   }
 }
 
@@ -40,13 +52,11 @@ const registration = async model => {
     const response = await axios.post(
       `${config.host}/api/RegistrationRequest/Create`,
       JSON.stringify(model),
-      {
-        headers: DEFAULT_HEADERS
-      }
+      { headers: getDefaultHeaders() }
     );
     return response.data;
   } catch (error) {
-    console.error('ERROR: ', error.response.data.message);
+    errorHandle(error);
   }
 }
 
@@ -62,13 +72,11 @@ const registrationRequestChangeStatus = async model => {
     const response = await axios.put(
       `${config.host}/api/RegistrationRequest/ChangeStatus`,
       JSON.stringify(model),
-      {
-        headers: DEFAULT_HEADERS
-      }
+      { headers: getDefaultHeaders() }
     );
     return response.data.data;
   } catch (error) {
-    console.error('ERROR: ', error.response.data.message);
+    errorHandle(error);
   }
 }
 
@@ -85,13 +93,11 @@ const registrationRequestsList = async model => {
     const { pageNumber, pageSize, filterString, orderString } = model;
     const response = await axios.get(
       `${config.host}/api/RegistrationRequest/List/${pageNumber}/${pageSize}/${filterString}%7C${orderString}`,
-      {
-        headers: DEFAULT_HEADERS
-      }
+      { headers: getDefaultHeaders() }
     );
     return response.data.data;
   } catch (error) {
-    console.error('ERROR: ', error.response.data.message);
+    errorHandle(error);
   }
 }
 
@@ -113,17 +119,14 @@ const registrationRequestsList = async model => {
  */
 const accountCreate = async model => {
   try {
-    console.log(`${config.host}/api/Account/Create`);
     const response = await axios.post(
       `${config.host}/api/Account/Create`,
       JSON.stringify(model),
-      {
-        headers: DEFAULT_HEADERS
-      }
+      { headers: getDefaultHeaders() }
     );
     return response.data.data;
   } catch (error) {
-    console.error('ERROR: ', error.response.data.message);
+    errorHandle(error);
   }
 }
 
