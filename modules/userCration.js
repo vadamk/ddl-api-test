@@ -46,46 +46,30 @@ const accountCreate = async (regReqData, regRequestId) => {
     registrationRequestId: regRequestId
   };
 
-  console.log('accountCreate: ', model);
-
   await api.accountCreate(model);
 }
 
 const flow = async () => {
 
-  console.log(' \n registration: \n');
-
   spinner.start();
   const regReqData = await registration();
   spinner.stop();
 
-  console.log(' \n regReqData: ', regReqData, ' \n');
-
-  console.log(' \n Login: \n');
   spinner.start();
   await auth.login(config.creds.superadmin);
   spinner.stop();
-
-  console.log(' \n Get ID of registration requests: \n');
 
   spinner.start();
   const regRequestId = await getRegistrationRequestsId(regReqData.email);
   spinner.stop();
 
-  console.log(' \n regRequestId: ', regRequestId, ' \n');
-
-  console.log(' \n Accept reg request: \n');
-
   spinner.start();
   await acceptRegRequest(regRequestId);
   spinner.stop();
 
-  console.log(' \n Create account: \n');
-
   spinner.start();
   await accountCreate(regReqData, regRequestId);
   spinner.stop();
-
 }
 
 module.exports = flow
