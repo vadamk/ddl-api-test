@@ -6,9 +6,15 @@ const util = require('../services/util');
 const spinner = require('../services/spinner');
 const moment = require('moment');
 
-const flow = async (login) => {
+let questionTypes = {
+	MultipleChoice: null,
+	Table: null,
+	Dropdown: null,
+	File: null,
+	Text: null,
+};
 
-	console.log(auth.isLoginned());
+const flow = async (login) => {
 
 	if (!auth.isLoginned()) {
 	  spinner.start('Login');
@@ -68,40 +74,17 @@ const flow = async (login) => {
 
 	const rootSectionId = questionnaireTreeView.questionnaireSections[0].id;
 
-  spinner.start('Create Questionnaire Section');
-	const createdSectionId = await api.createQuestionnaireSection({
-	  questionnaireId: questionnaireId,
-	  ...fakeData.creationQuestionnaireSection(),
-	  previousSectionOrder: 0,
-	  parentSectionId: rootSectionId // or null
-	});
-	if (createdSectionId) {
-  	spinner.succeed();
-	} else {
-  	spinner.fail('Section has not been created!');
-	}
-
-
   spinner.start('Get Question Types');
-	const questionTypes = await getQuestionTypes();
+	questionTypes = await getQuestionTypes();
 	if (questionTypes.Text) {
   	spinner.succeed();
 	} else {
   	spinner.fail('Question types has not been received!');
 	}
 
-  spinner.start('Create Questionnaire Question');
-	const createdQuestionId = await api.createQuestionnaireQuestion({
-	  ...fakeData.creationQuestionnaireQuestion(),
-	  previousSectionOrder: 0,
-	  questionnaireSectionId: createdSectionId, // or other sectionId
-	  questionTypeId: questionTypes.Text, // or other type see getQuestionTypes function
-	});
-	if (questionTypes.Text) {
-  	spinner.succeed();
-	} else {
-  	spinner.fail('Question has not been created!');
-	}
+
+	createByTemplate(nodes, questionnaireId, null);
+
 
   spinner.stopAndPersist({
   	symbol: '🦄',
@@ -121,13 +104,128 @@ const getQuestionTypes = async () => {
 	return await (await api.getQuestionTypes()).reduce((acc, cur) => {
 		acc[cur.optionName] = cur.id;
 		return acc;
-	}, {
-		MultipleChoice: null,
-		Table: null,
-		Dropdown: null,
-		File: null,
-		Text: null,
-	});
+	}, questionTypes);
 }
 
-module.exports = flow;
+const nodes = [
+	{
+		type: 'section',
+		children: [
+			{
+				type: 'section',
+				children: [
+					{
+						type: 'question',
+						questionType: 'Text'
+					},
+					{
+						type: 'question',
+						questionType: 'Dropdown'
+					},
+				]
+			}
+		]
+	},
+	{
+		type: 'section',
+		children: [
+			{
+				type: 'section',
+				children: [
+					{
+						type: 'question',
+						questionType: 'Text'
+					},
+					{
+						type: 'question',
+						questionType: 'Dropdown'
+					},
+				]
+			}
+		]
+	},
+	{
+		type: 'section',
+		children: [
+			{
+				type: 'section',
+				children: [
+					{
+						type: 'question',
+						questionType: 'Text'
+					},
+					{
+						type: 'question',
+						questionType: 'Dropdown'
+					},
+				]
+			}
+		]
+	},
+	
+];
+
+const createByTemplate = async (nodes, questionnaireId, parrentId) => {
+	nodes.forEach(async (node) => {
+
+		console.log(node.type);
+		
+		if (node.type === 'question') {
+			await createQuestion(parrentId, node.questionType);
+			return;
+		}
+
+		const createdSectionId = await createSection(questionnaireId, parrentId);
+
+		if (node.children && node.children.length) {
+			await createByTemplate(node.children, questionnaireId, createdSectionId);
+		}
+	});
+
+}
+
+const createSection = async (questionnaireId, parrentId) => {
+  
+  spinner.start('Create Questionnaire Section');
+	
+	const createdSectionId = await api.createQuestionnaireSection({
+	  questionnaireId: questionnaireId,
+	  ...fakeData.creationQuestionnaireSection(),
+	  previousSectionOrder: 0,
+	  parentSectionId: parrentId // or null
+	});
+
+	if (createdSectionId) {
+  	spinner.succeed();
+	} else {
+  	spinner.fail('Section has not been created!');
+	}
+
+	return createdSectionId;
+}
+
+const createQuestion = async (sectionId, type) => {
+
+  spinner.start('Create Questionnaire Question');
+
+	const createdQuestionId = await api.createQuestionnaireQuestion({
+	  ...fakeData.creationQuestionnaireQuestion(),
+	  previousSectionOrder: 0,
+	  questionnaireSectionId: sectionId, // or other sectionId
+	  questionTypeId: questionTypes[type], // or other type see getQuestionTypes function
+	});
+
+	if (questionTypes.Text) {
+  	spinner.succeed();
+	} else {
+  	spinner.fail('Question has not been created!');
+	}
+
+	return createdQuestionId;
+}
+
+module.exports = async (number = 1) => {
+	for (let i = 0; i < number; i++) {
+		await flow();
+	}
+}

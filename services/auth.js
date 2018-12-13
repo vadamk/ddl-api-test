@@ -7,8 +7,8 @@ const login = async (model) => {
   store.setAuthToken(data.auth_token);
 }
 
-const getAuthToken = `Bearer ${store.auth_token}`;
-const isLoginned = () => !!store.auth_token;
+const getAuthToken = () => `Bearer ${store.getAuthToken()}`;
+const isLoginned = () => !!store.getAuthToken();
 
 module.exports = {
   login,
