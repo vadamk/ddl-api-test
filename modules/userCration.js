@@ -50,7 +50,7 @@ const accountCreate = async (regReqData, regRequestId) => {
 }
 
 const flow = async () => {
-
+  
   spinner.start();
   const regReqData = await registration();
   spinner.stop();

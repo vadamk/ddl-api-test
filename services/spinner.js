@@ -1,3 +1,8 @@
-const Spinner = require('cli-spinner').Spinner;
+const Ora = require('ora');
 
-module.exports = new Spinner('processing.. %s')
+const spinner = new Ora({
+	text: 'Loading...',
+	spinner: 'dots'
+});
+
+module.exports = spinner;

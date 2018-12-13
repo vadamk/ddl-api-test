@@ -1,19 +1,6 @@
 const faker = require('faker');
 const config = require('../config');
 
-/**
- * Return registration request data
- * 
- * @typedef {Object} Ruq
- * @property {string} Ruq.firstName
- * @property {string} Ruq.lastName
- * @property {string} Ruq.jobTitle
- * @property {string} Ruq.companyName
- * @property {string} Ruq.phoneNumber
- * @property {string} Ruq.email
- * 
- * @returns {Ruq}
- */
 const registration = () => {
 
   const firstName = faker.name.firstName();
@@ -46,7 +33,32 @@ const сreateAccountMissing = () => {
   };
 }
 
+const creationQuestionnaire = () => {
+  return {
+    questionnaireTitle: faker.name.title(),
+    questionnaireDescription: faker.lorem.words(),
+  };
+}
+
+const creationQuestionnaireSection = () => {
+  return {
+    sectionName: faker.name.title(),
+    description: faker.lorem.words(),
+  };
+}
+
+const creationQuestionnaireQuestion = () => {
+  return {
+    questionTitle: faker.name.title(),
+    description: faker.lorem.words(),
+    questionText: faker.lorem.words(),
+  };
+}
+
 module.exports = {
   registration,
-  сreateAccountMissing
+  сreateAccountMissing,
+  creationQuestionnaire,
+  creationQuestionnaireSection,
+  creationQuestionnaireQuestion,
 }

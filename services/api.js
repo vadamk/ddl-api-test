@@ -18,13 +18,6 @@ const getDefaultHeaders = () => {
   return headers;
 };
 
-/**
- * Login request
- * @param {Object} model
- * @param {string} model.userName
- * @param {string} model.password
- * @param {boolean} model.rememberMeChecked
- */
 const login = async model => {
   try {
     const response = await axios.post(
@@ -37,16 +30,6 @@ const login = async model => {
   }
 }
 
-/**
- * Registration request
- * @param {Object} model
- * @param {string} model.firstName
- * @param {string} model.lastName
- * @param {string} model.jobTitle
- * @param {string} model.companyName
- * @param {string} model.phoneNumber
- * @param {string} model.email
- */
 const registration = async model => {
   try {
     const response = await axios.post(
@@ -60,13 +43,6 @@ const registration = async model => {
   }
 }
 
-/**
- * Registration request change status
- * @param {Object} model
- * @param {string} model.id
- * @param {boolean} model.isApproved
- * @param {string} model.declineReason
- */
 const registrationRequestChangeStatus = async model => {
   try {
     const response = await axios.put(
@@ -80,14 +56,6 @@ const registrationRequestChangeStatus = async model => {
   }
 }
 
-/**
- * Registration requests list
- * @param {Object} model
- * @param {string} model.pageNumber
- * @param {string} model.pageSize
- * @param {string} model.filterString
- * @param {string} model.orderString
- */
 const registrationRequestsList = async model => {
   try {
     const { pageNumber, pageSize, filterString, orderString } = model;
@@ -101,22 +69,6 @@ const registrationRequestsList = async model => {
   }
 }
 
-/**
- * Create account
- * @param {Object} model
- * @param {string} model.email
- * @param {string} model.firstName
- * @param {string} model.lastName
- * @param {string} model.jobTitle
- * @param {string} model.designation
- * @param {string} model.mobile
- * @param {string} model.address1
- * @param {string} model.countryId
- * @param {string} model.stateId
- * @param {string} model.city
- * @param {string} model.zipcode
- * @param {string} model.companyId
- */
 const accountCreate = async model => {
   try {
     const response = await axios.post(
@@ -130,10 +82,92 @@ const accountCreate = async model => {
   }
 }
 
+const createQuestionnaire = async model => {
+  try {
+    const response = await axios.post(
+      `${config.host}/api/Questionnaire/CreateQuestionnaire`,
+      JSON.stringify(model),
+      { headers: getDefaultHeaders() }
+    );
+    return response.data.data.id;
+  } catch (error) {
+    errorHandle(error);
+  }
+}
+
+const getTreeView = async model => {
+  try {
+    const response = await axios.post(
+      `${config.host}/api/QuestionnaireTreeView`,
+      JSON.stringify(model),
+      { headers: getDefaultHeaders() }
+    );
+    return response.data.data;
+  } catch (error) {
+    errorHandle(error);
+  }
+}
+
+const createQuestionnaireSection = async model => {
+  try {
+    const response = await axios.post(
+      `${config.host}/api/Section/Create`,
+      JSON.stringify(model),
+      { headers: getDefaultHeaders() }
+    );
+    return response.data.data.id;
+  } catch (error) {
+    errorHandle(error);
+  }
+}
+
+const createQuestionnaireQuestion = async model => {
+  try {
+    const response = await axios.post(
+      `${config.host}/api/Question/Create`,
+      JSON.stringify(model),
+      { headers: getDefaultHeaders() }
+    );
+    return response.data.data.id;
+  } catch (error) {
+    errorHandle(error);
+  }
+}
+
+const getQuestionTypes = async () => {
+  try {
+    const response = await axios.get(
+      `${config.host}/api/Questionnaire/GetQuestionTypeChoice`,
+      { headers: getDefaultHeaders() }
+    );
+    return response.data.data;
+  } catch (error) {
+    errorHandle(error);
+  }
+}
+
+const getAssetClassList = async (pageNumber, pageSize) => {
+  try {
+    const response = await axios.get(
+      `${config.host}/api/AssetClass/List/${pageNumber}/${pageSize}/%7c`,
+      { headers: getDefaultHeaders() }
+    );
+    return response.data.data;
+  } catch (error) {
+    errorHandle(error);
+  }
+}
+
 module.exports = {
   login,
   registration,
   registrationRequestsList,
   registrationRequestChangeStatus,
-  accountCreate
+  accountCreate,
+  createQuestionnaire,
+  getTreeView,
+  createQuestionnaireSection,
+  createQuestionnaireQuestion,
+  getQuestionTypes,
+  getAssetClassList,
 };
